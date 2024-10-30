@@ -32,6 +32,6 @@ O projeto adota os princípios SOLID para promover uma arquitetura organizada e 
 ## 🛠 Como Configurar e Executar o Projeto
 1. Clone o repositório e entre na pasta do projeto.
 2. Instale as dependências com npm install.
-3. Configure as variáveis de ambiente (ex.: dados do MongoDB, secret do JWT).
+3. Configure as variáveis de ambiente (ex.: dados do Banco de Dados, secret do JWT).
 4. Execute a API com npm start.
 5. Para rodar os testes, utilize o comando npm test.
