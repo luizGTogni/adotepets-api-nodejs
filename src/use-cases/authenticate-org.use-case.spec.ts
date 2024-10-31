@@ -1,5 +1,6 @@
 import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs.repository';
 import { hash } from 'bcryptjs';
+import { makeOrg } from 'tests/factories/make-org.factory';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AuthenticateOrgUseCase } from './authenticate-org.use-case';
 import { InvalidCredentialsError } from './errors/invalid-credentials.error';
@@ -14,30 +15,18 @@ describe('Authenticate Org Use Case', () => {
   });
 
   it('should be able to authenticate', async () => {
-    const email = 'contato.test@gmail.com';
     const password = '123456';
 
-    await orgsRepository.create({
-      author_name: 'Name Test',
-      cep: '13458-852',
-      city: 'Rio de Janeiro',
-      email,
-      latitude: -21.5852,
-      longitude: -21.5852,
-      name: 'Pets Amigos',
-      neighborhood: 'Freira',
-      password: await hash(password, 6),
-      state: 'Rio de Janeiro',
-      street: 'Rua Marley e Eu',
-      whatsapp: '19999100599',
-    });
+    const org = await orgsRepository.create(
+      makeOrg({ password: await hash(password, 6) })
+    );
 
-    const { org } = await sut.execute({
-      email,
+    const { org: authenticatedOrg } = await sut.execute({
+      email: org.email,
       password,
     });
 
-    expect(org.id).toEqual(expect.any(String));
+    expect(authenticatedOrg.id).toEqual(expect.any(String));
   });
 
   it('should not be able to authenticate with wrong email', async () => {
@@ -50,27 +39,16 @@ describe('Authenticate Org Use Case', () => {
   });
 
   it('should not be able to authenticate with wrong password', async () => {
-    const email = 'contato.test@gmail.com';
+    const password = '123456';
 
-    await orgsRepository.create({
-      author_name: 'Name Test',
-      cep: '13458-852',
-      city: 'Rio de Janeiro',
-      email,
-      latitude: -21.5852,
-      longitude: -21.5852,
-      name: 'Pets Amigos',
-      neighborhood: 'Freira',
-      password: await hash('password_error', 6),
-      state: 'Rio de Janeiro',
-      street: 'Rua Marley e Eu',
-      whatsapp: '19999100599',
-    });
+    const org = await orgsRepository.create(
+      makeOrg({ password: await hash(password, 6) })
+    );
 
     await expect(() =>
       sut.execute({
-        email,
-        password: '123456',
+        email: org.email,
+        password: '123485',
       })
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
   });

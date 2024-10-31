@@ -1,8 +1,9 @@
 import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs.repository';
 import { compare } from 'bcryptjs';
+import { makeOrg } from 'tests/factories/make-org.factory';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { CreateOrgUseCase } from './create-org.use-case';
-import { OrgsAlreadyExistsError } from './errors/orgs-already-exists.error';
+import { OrgAlreadyExistsError } from './errors/org-already-exists.error';
 
 describe('Create Org Use Case', () => {
   let orgsRepository: InMemoryOrgsRepository;
@@ -14,77 +15,27 @@ describe('Create Org Use Case', () => {
   });
 
   it('Create Org Use Case', async () => {
-    const { org } = await sut.execute({
-      author_name: 'Name Test',
-      cep: '13458-852',
-      city: 'Rio de Janeiro',
-      email: 'contato.test@gmail.com',
-      latitude: -21.5852,
-      longitude: -21.5852,
-      name: 'Pets Amigos',
-      neighborhood: 'Freira',
-      password: '132456',
-      state: 'Rio de Janeiro',
-      street: 'Rua Marley e Eu',
-      whatsapp: '19999100599',
-    });
+    const { org } = await sut.execute(makeOrg());
 
     expect(org.id).toEqual(expect.any(String));
   });
 
   it('should not be able to create a new org with an already used email', async () => {
-    const email = 'contato.test@gmail.com';
+    const org = makeOrg();
 
-    await sut.execute({
-      author_name: 'Name Test',
-      cep: '13458-852',
-      city: 'Rio de Janeiro',
-      email,
-      latitude: -21.5852,
-      longitude: -21.5852,
-      name: 'Pets Amigos',
-      neighborhood: 'Freira',
-      password: '132456',
-      state: 'Rio de Janeiro',
-      street: 'Rua Marley e Eu',
-      whatsapp: '19999100599',
-    });
+    await orgsRepository.create(org);
 
-    await expect(() =>
-      sut.execute({
-        author_name: 'Name Test',
-        cep: '13458-852',
-        city: 'Rio de Janeiro',
-        email,
-        latitude: -21.5852,
-        longitude: -21.5852,
-        name: 'Pets Amigos',
-        neighborhood: 'Freira',
-        password: '132456',
-        state: 'Rio de Janeiro',
-        street: 'Rua Marley e Eu',
-        whatsapp: '19999100599',
-      })
-    ).rejects.toBeInstanceOf(OrgsAlreadyExistsError);
+    await expect(() => sut.execute(org)).rejects.toBeInstanceOf(
+      OrgAlreadyExistsError
+    );
   });
 
   it('should hash password upon creation', async () => {
-    const { org } = await sut.execute({
-      author_name: 'Name Test',
-      cep: '13458-852',
-      city: 'Rio de Janeiro',
-      email: 'contato.test@gmail.com',
-      latitude: -21.5852,
-      longitude: -21.5852,
-      name: 'Pets Amigos',
-      neighborhood: 'Freira',
-      password: '132456',
-      state: 'Rio de Janeiro',
-      street: 'Rua Marley e Eu',
-      whatsapp: '19999100599',
-    });
+    const password = '123456';
 
-    const isPasswordCorrectlyHashed = await compare('132456', org.password);
+    const { org } = await sut.execute(makeOrg({ password }));
+
+    const isPasswordCorrectlyHashed = await compare(password, org.password);
 
     expect(isPasswordCorrectlyHashed).toBe(true);
   });

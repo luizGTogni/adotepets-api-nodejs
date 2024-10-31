@@ -6,7 +6,7 @@ CREATE TABLE "pets" (
     "age" INTEGER NOT NULL,
     "size" TEXT NOT NULL,
     "energy_level" TEXT NOT NULL,
-    "ord_id" TEXT NOT NULL,
+    "org_id" TEXT NOT NULL,
 
     CONSTRAINT "pets_pkey" PRIMARY KEY ("id")
 );
@@ -34,4 +34,4 @@ CREATE TABLE "orgs" (
 CREATE UNIQUE INDEX "orgs_email_key" ON "orgs"("email");
 
 -- AddForeignKey
-ALTER TABLE "pets" ADD CONSTRAINT "pets_ord_id_fkey" FOREIGN KEY ("ord_id") REFERENCES "orgs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "pets" ADD CONSTRAINT "pets_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "orgs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

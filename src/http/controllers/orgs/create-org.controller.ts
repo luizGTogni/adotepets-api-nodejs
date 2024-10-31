@@ -1,6 +1,5 @@
-import { PrismaOrgsRepository } from '@/repositories/prisma/prisma-orgs.repository';
-import { CreateOrgUseCase } from '@/use-cases/create-org.use-case';
-import { OrgsAlreadyExistsError } from '@/use-cases/errors/orgs-already-exists.error';
+import { OrgAlreadyExistsError } from '@/use-cases/errors/org-already-exists.error';
+import { makeCreateOrgUseCase } from '@/use-cases/factories/make-create-org-use-case';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
@@ -25,18 +24,18 @@ export async function createOrgController(
 
   const body = createOrgBodySchema.parse(request.body);
 
+  let org = null;
   try {
-    const prismaOrgsRepository = new PrismaOrgsRepository();
-    const registerUseCase = new CreateOrgUseCase(prismaOrgsRepository);
+    const createOrgUseCase = makeCreateOrgUseCase();
 
-    await registerUseCase.execute(body);
+    org = await createOrgUseCase.execute(body);
   } catch (err) {
-    if (err instanceof OrgsAlreadyExistsError) {
+    if (err instanceof OrgAlreadyExistsError) {
       return reply.status(409).send({ message: err.message });
     }
 
     throw err;
   }
 
-  return reply.status(201).send();
+  return reply.status(201).send(org);
 }

@@ -20,9 +20,9 @@ model Pet {
   age          Int
   size         String
   energy_level String
-  ord_id       String
+  org_id       String
 
-  org ORG @relation(fields: [ord_id], references: [id])
+  org ORG @relation(fields: [org_id], references: [id])
 
   @@map("pets")
 }
