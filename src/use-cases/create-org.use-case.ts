@@ -22,7 +22,7 @@ interface CreateOrgUseCaseResponse {
   org: ORG;
 }
 
-export class RegisterUseCase {
+export class CreateOrgUseCase {
   constructor(private orgsRepository: OrgsRepository) {}
 
   async execute({

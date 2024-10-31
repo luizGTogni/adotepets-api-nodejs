@@ -1,15 +1,20 @@
 import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs.repository';
 import { compare } from 'bcryptjs';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { CreateOrgUseCase } from './create-org.use-case';
 import { OrgsAlreadyExistsError } from './errors/orgs-already-exists.error';
-import { RegisterUseCase } from './register';
 
 describe('Create Org Use Case', () => {
-  it('Create Org Use Case', async () => {
-    const orgsRepository = new InMemoryOrgsRepository();
-    const registerUseCase = new RegisterUseCase(orgsRepository);
+  let orgsRepository: InMemoryOrgsRepository;
+  let sut: CreateOrgUseCase;
 
-    const { org } = await registerUseCase.execute({
+  beforeEach(() => {
+    orgsRepository = new InMemoryOrgsRepository();
+    sut = new CreateOrgUseCase(orgsRepository);
+  });
+
+  it('Create Org Use Case', async () => {
+    const { org } = await sut.execute({
       author_name: 'Name Test',
       cep: '13458-852',
       city: 'Rio de Janeiro',
@@ -28,12 +33,9 @@ describe('Create Org Use Case', () => {
   });
 
   it('should not be able to create a new org with an already used email', async () => {
-    const orgsRepository = new InMemoryOrgsRepository();
-    const registerUseCase = new RegisterUseCase(orgsRepository);
-
     const email = 'contato.test@gmail.com';
 
-    await registerUseCase.execute({
+    await sut.execute({
       author_name: 'Name Test',
       cep: '13458-852',
       city: 'Rio de Janeiro',
@@ -49,7 +51,7 @@ describe('Create Org Use Case', () => {
     });
 
     await expect(() =>
-      registerUseCase.execute({
+      sut.execute({
         author_name: 'Name Test',
         cep: '13458-852',
         city: 'Rio de Janeiro',
@@ -67,10 +69,7 @@ describe('Create Org Use Case', () => {
   });
 
   it('should hash password upon creation', async () => {
-    const orgsRepository = new InMemoryOrgsRepository();
-    const registerUseCase = new RegisterUseCase(orgsRepository);
-
-    const { org } = await registerUseCase.execute({
+    const { org } = await sut.execute({
       author_name: 'Name Test',
       cep: '13458-852',
       city: 'Rio de Janeiro',

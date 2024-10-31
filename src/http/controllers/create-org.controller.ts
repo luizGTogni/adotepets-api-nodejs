@@ -1,16 +1,19 @@
 import { PrismaOrgsRepository } from '@/repositories/prisma/prisma-orgs.repository';
+import { CreateOrgUseCase } from '@/use-cases/create-org.use-case';
 import { OrgsAlreadyExistsError } from '@/use-cases/errors/orgs-already-exists.error';
-import { RegisterUseCase } from '@/use-cases/register';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
-export async function register(request: FastifyRequest, reply: FastifyReply) {
-  const requestBodySchema = z.object({
+export async function createOrgController(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const createOrgBodySchema = z.object({
     name: z.string(),
     author_name: z.string(),
-    email: z.string(),
+    email: z.string().email(),
     whatsapp: z.string(),
-    password: z.string(),
+    password: z.string().min(6),
     cep: z.string(),
     state: z.string(),
     city: z.string(),
@@ -20,11 +23,11 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     longitude: z.number(),
   });
 
-  const body = requestBodySchema.parse(request.body);
+  const body = createOrgBodySchema.parse(request.body);
 
   try {
     const prismaOrgsRepository = new PrismaOrgsRepository();
-    const registerUseCase = new RegisterUseCase(prismaOrgsRepository);
+    const registerUseCase = new CreateOrgUseCase(prismaOrgsRepository);
 
     await registerUseCase.execute(body);
   } catch (err) {
