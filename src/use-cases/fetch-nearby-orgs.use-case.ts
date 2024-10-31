@@ -1,5 +1,6 @@
 import type { OrgsRepository } from '@/repositories/orgs-repository';
 import type { ORG } from '@prisma/client';
+import { OrgNotFoundError } from './errors/org-not-found.error';
 
 interface FetchNearbyOrgsUseCaseRequest {
   userLatitude: number;
@@ -21,6 +22,10 @@ export class FetchNearbyOrgsUseCase {
       latitude: userLatitude,
       longitude: userLongitude,
     });
+
+    if (!orgs) {
+      throw new OrgNotFoundError();
+    }
 
     return { orgs };
   }

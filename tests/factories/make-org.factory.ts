@@ -2,6 +2,8 @@ import { faker } from '@faker-js/faker';
 import crypto from 'node:crypto';
 
 type Overwrite = {
+  latitude?: number;
+  longitude?: number;
   password?: string;
 };
 
@@ -12,8 +14,8 @@ export function makeOrg(overwrite?: Overwrite) {
     cep: faker.location.zipCode(),
     city: faker.location.city(),
     email: faker.internet.email(),
-    latitude: faker.location.latitude(),
-    longitude: faker.location.longitude(),
+    latitude: overwrite?.latitude ?? faker.location.latitude(),
+    longitude: overwrite?.longitude ?? faker.location.longitude(),
     name: faker.company.name(),
     neighborhood: faker.location.streetAddress(),
     password: overwrite?.password ?? faker.internet.password(),

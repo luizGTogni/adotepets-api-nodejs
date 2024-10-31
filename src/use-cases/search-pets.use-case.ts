@@ -1,5 +1,6 @@
 import type { PetsRepository } from '@/repositories/pets-repository';
 import type { Pet } from '@prisma/client';
+import { PetNotFoundError } from './errors/pet-not-found.error';
 
 interface SearchPetsUseCaseRequest {
   city: string;
@@ -27,6 +28,10 @@ export class SearchPetsUseCase {
       size,
       energy_level,
     });
+
+    if (!pets) {
+      throw new PetNotFoundError();
+    }
 
     return { pets };
   }
