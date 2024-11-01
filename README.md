@@ -33,5 +33,7 @@ O projeto adota os princípios SOLID para promover uma arquitetura organizada e 
 1. Clone o repositório e entre na pasta do projeto.
 2. Instale as dependências com npm install.
 3. Configure as variáveis de ambiente (ex.: dados do Banco de Dados, secret do JWT).
-4. Execute a API com npm start.
-5. Para rodar os testes, utilize o comando npm test.
+4. Configure o docker com docker compose up -d
+5. Execute o Prisma com o comando npx prisma migrate dev
+6. Execute a API com npm start:dev.
+7. Para rodar os testes, utilize o comando npm run test ou npm run test:e2e.
