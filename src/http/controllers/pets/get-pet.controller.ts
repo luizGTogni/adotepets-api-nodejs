@@ -7,17 +7,18 @@ export async function getPetController(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const getPetRouteSchema = z.object({
+  const getPetParamsSchema = z.object({
     id: z.string(),
   });
 
-  const { id } = getPetRouteSchema.parse(request.body);
+  const { id } = getPetParamsSchema.parse(request.params);
 
-  let pet = null;
   try {
     const getPetUseCase = makeGetPetUseCase();
 
-    pet = await getPetUseCase.execute({ id });
+    const { pet } = await getPetUseCase.execute({ id });
+
+    return reply.status(200).send({ pet });
   } catch (err) {
     if (err instanceof PetNotFoundError) {
       return reply.status(404).send({ message: err.message });
@@ -25,6 +26,4 @@ export async function getPetController(
 
     throw err;
   }
-
-  return reply.status(200).send(pet);
 }

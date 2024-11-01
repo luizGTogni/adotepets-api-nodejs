@@ -1,4 +1,4 @@
-import { Prisma, type Pet } from '@prisma/client';
+import { Pet, Prisma } from '@prisma/client';
 
 export interface FindAllParams {
   city: string;

@@ -17,18 +17,22 @@ describe('Fetch Nearby Orgs (E2E)', () => {
     const org = makeOrg();
 
     await request(app.server).post('/orgs').send(org).expect(201);
-    await request(app.server).post('/orgs').send(makeOrg({ latitude: org.latitude, longitude: org.longitude })).expect(201);
-    await request(app.server).post('/orgs').send(makeOrg({ latitude: org.latitude, longitude: org.longitude })).expect(201);
+    await request(app.server)
+      .post('/orgs')
+      .send(makeOrg({ latitude: org.latitude, longitude: org.longitude }))
+      .expect(201);
+    await request(app.server)
+      .post('/orgs')
+      .send(makeOrg({ latitude: org.latitude, longitude: org.longitude }))
+      .expect(201);
 
     const response = await request(app.server).get('/orgs/nearby').query({
       latitude: org.latitude,
-      longitude: org.longitude
+      longitude: org.longitude,
     });
 
-    console.log(response)
-
     expect(response.status).toBe(200);
-    expect(response.body.orgs).toHaveLength(3)
-    expect(response.body.orgs[0].name).toEqual(org.name)
+    expect(response.body.orgs).toHaveLength(3);
+    expect(response.body.orgs[0].name).toEqual(org.name);
   });
 });

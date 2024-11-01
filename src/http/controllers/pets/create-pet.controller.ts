@@ -15,13 +15,16 @@ export async function createPetController(
     energy_level: z.string(),
   });
 
-  const body = createPetBodySchema.parse(request.body);
-
-  let pet = null;
   try {
+    const body = createPetBodySchema.parse(request.body);
+
     const createPetUseCase = makeCreatePetUseCase();
 
-    pet = await createPetUseCase.execute({ ...body, org_id: 'iii' });
+    const org_id = request.user.sub;
+
+    const { pet } = await createPetUseCase.execute({ ...body, org_id });
+
+    return reply.status(201).send({ pet });
   } catch (err) {
     if (err instanceof OrgNotFoundError) {
       return reply.status(404).send({ message: err.message });
@@ -29,6 +32,4 @@ export async function createPetController(
 
     throw err;
   }
-
-  return reply.status(201).send(pet);
 }

@@ -9,20 +9,26 @@ export async function searchPetsController(
 ) {
   const searchPetsQuerySchema = z.object({
     city: z.string().min(1),
-    age: z.number().optional(),
+    age: z.coerce.number().optional(),
     size: z.string().optional(),
     energy_level: z.string().optional(),
   });
 
   const { city, age, size, energy_level } = searchPetsQuerySchema.parse(
-    request.body
+    request.query
   );
 
-  let pets = null;
   try {
     const searchPetsUseCase = makeSearchPetsUseCase();
 
-    pets = await searchPetsUseCase.execute({ city, age, size, energy_level });
+    const { pets } = await searchPetsUseCase.execute({
+      city,
+      age,
+      size,
+      energy_level,
+    });
+
+    return reply.status(200).send({ pets });
   } catch (err) {
     if (err instanceof PetNotFoundError) {
       return reply.status(404).send({ message: err.message });
@@ -30,6 +36,4 @@ export async function searchPetsController(
 
     throw err;
   }
-
-  return reply.status(200).send(pets);
 }

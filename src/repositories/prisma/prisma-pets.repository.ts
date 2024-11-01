@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
-import type { Prisma } from '@prisma/client';
-import type { FindAllParams, PetsRepository } from '../pets-repository';
+import { Prisma } from '@prisma/client';
+import { FindAllParams, PetsRepository } from '../pets-repository';
 
 export class PrismaPetsRepository implements PetsRepository {
   async findById(id: string) {

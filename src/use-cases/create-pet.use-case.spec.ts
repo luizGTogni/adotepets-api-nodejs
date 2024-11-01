@@ -13,7 +13,7 @@ describe('Create Org Use Case', () => {
 
   beforeEach(() => {
     orgsRepository = new InMemoryOrgsRepository();
-    petsRepository = new InMemoryPetsRepository();
+    petsRepository = new InMemoryPetsRepository(orgsRepository);
     sut = new CreatePetUseCase(orgsRepository, petsRepository);
   });
 
